@@ -133,10 +133,50 @@ int fermatTest(int number, int num_tests)
         return 1;
 }
 
+int millerRabin(int number)
+{
+    int a = rand() % number + 1;
+    int s = 0;
+    int d = number-1;
+
+    while (d % 2 == 0)
+    {
+        s++;
+        d /= 2;
+    }
+
+    int result1 = safePow(a, d) % number;
+    int result2 = 0;
+    if (result1 == -1)
+    {
+        cout << "Error (millerRabin): Could not compute " << a << "^" << d << ".\n";
+        return -1;
+    }
+    else if (result1 == 1)
+        return 1;
+
+    for (int r = 0; r <= s - 1; r++)
+    {
+        //There has to be a better way to detect if safePow returned an error.
+        //Throw exception?
+        result1 = safePow(2, r);
+        result2 = safePow(a, result1 * d);
+        if (result1 == -1 || result2 == -1)
+        {
+            cout << "Error (millerRabin): Exponention too big.\n";
+            return -1;
+        }
+
+        if (safePow(a, safePow(2, r) * d) % number == number - 1)
+            return 1;
+    }
+    return 0;
+}
+
 int main()
 {
     int number = 0;
-    int num_tests = 3;
+    int num_tests = 4;
 
     //Get user input
     do{
@@ -150,12 +190,14 @@ int main()
     test_names[0] = "Trial Division";
     test_names[1] = "Wilson's Theorem";
     test_names[2] = "Fermat's Test";
+    test_names[3] = "Miller-Rabin";
 
     //Create an array for test results
     int test_results[num_tests];
     test_results[0] = trialDivision(number);
     test_results[1] = wilsonsTheorem(number);
     test_results[2] = fermatTest(number, 20);
+    test_results[3] = millerRabin(number);
 
     //Print test results
     cout << "\nResults:\n";
