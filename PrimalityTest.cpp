@@ -1,5 +1,8 @@
-#include <iostream>
+#include <climits>
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
 using namespace std;
 
 int factorial(const int number)
@@ -19,6 +22,55 @@ int factorial(const int number)
         return 1;
     else
         return number * factorial(number-1);
+}
+
+//Uses Euclidean algorithm to compute greatest common divisor
+//Returns int in range [1,min(a,b)] or -1 for failure
+int gcd (int a, int b)
+{
+    if(a < 1 || b < 1)
+    {
+        cout << "Error (gcd): a and b must be at least 1\n";
+        cout << "You entered a: " << a << ", b: " << b << endl;
+        return -1;
+    }
+
+    int temp = 0;
+
+    while (b != 0)
+    {
+        temp = b;
+        b = a % b;
+        a = temp;
+    }
+
+    return a;
+}
+
+int safePow(int a, int b)
+{
+    int total = 1;
+    for (int i = 0; i < b; i++)
+    {
+        if (INT_MAX / a <= total)
+        {
+            cout << "Error (safePow): computing " << a << "^" << b << " will cause overflow.\n";
+            return -1;
+        }
+        else
+            total *= a;
+    }
+    return total;
+}
+
+//Determine if two ints are coprime.
+//a and b are coprime iff gcd(a, b) = 1
+bool coprime (int a, int b)
+{
+    if (gcd(a, b) == 1)
+        return true;
+    else
+        return false;
 }
 
 int trialDivision(const int number)
@@ -46,10 +98,43 @@ int wilsonsTheorem(const int number)
         return 0;
 }
 
+//Uses Fermat's test to determine primality
+//This is a probabilistic test, which means there is a small chance it could return an incorrect answer.
+//      To diminish this chance, run the test many times.
+//Returns 1 if prime, 0 if composite, -1 for error.
+//NOTE: Fermat's test does not work on Carmichael numbers, of which there are infinitely many.
+//      A Carmichael number is a composite number for which the test will always return 1, no matter
+//      which value of a is chosen. For more reliable tests, try Miller-Rabin or Solovay Strassen.
+//WARNING: This function can experience integer overflows very easily.
+int fermatTest(int number, int num_tests)
+{
+        //Randomly pick a number a in the range [2, number-2]
+        srand(time(NULL));
+        int a = rand() % (number - 2) + 2;
+
+        //If a^(n-1) % number = 1, number is probably prime
+        //Repeat num_tests times
+        int result = 0;
+        for (int i = 0; i < num_tests; i++)
+        {
+            result = safePow(a, number-1) % number;
+            if (result == -1)
+            {
+                cout << "Error (fermatTest): Could not compute " << a << "^" << (number-1) << ".\n";
+                return -1;
+            }
+            else if (result != 1)
+                return 0;
+            a = rand() % (number - 2) + 2;
+        }
+
+        return 1;
+}
+
 int main()
 {
     int number = 0;
-    int num_tests = 2;
+    int num_tests = 3;
 
     //Get user input
     do{
@@ -62,11 +147,13 @@ int main()
     string test_names[num_tests];
     test_names[0] = "Trial Division";
     test_names[1] = "Wilson's Theorem";
+    test_names[2] = "Fermat's Test";
 
     //Create an array for test results
     int test_results[num_tests];
     test_results[0] = trialDivision(number);
     test_results[1] = wilsonsTheorem(number);
+    test_results[2] = fermatTest(number, 20);
 
     //Print test results
     cout << "\nResults:\n";
@@ -77,9 +164,9 @@ int main()
         if(test_results[i] == 1)
             cout << number << " is prime.\n";
         else if (test_results[i] == 0)
-            cout << number << " is prime\n";
+            cout << number << " is not prime.\n";
         else
-            cout << "Error.";
+            cout << "Error.\n";
     }
     cout << "\n";
 
