@@ -5,6 +5,8 @@
 #include <iostream>
 using namespace std;
 
+//Compute factorial up to 12!
+//Just adding this comment to test github. Remove at a later date.
 int factorial(const int number)
 {
     if (number > 12)
