@@ -3,12 +3,12 @@ Author: Josh Burbridge
 Date: 21 December 2017
 This game simulates the classic 15-puzzle seen in toy stores and online.
 
-Ideas for expansion:
-    Add support for arrow keys instead of WASD
-    Combine with a GUI instead of playing in the console
+Ideas for improvement:
+    +Add support for arrow keys instead of WASD
+    +Combine with a GUI instead of playing in the console
         If using a GUI, make a picture puzzle instead of a number puzzle
         Make it a video puzzle like in Banjo Tooie
-    Create an AI that solves this, and use it to provide hints to the player
+    +Create an AI that solves this, and use it to provide hints to the player
 */
 
 #include <cstdlib>
